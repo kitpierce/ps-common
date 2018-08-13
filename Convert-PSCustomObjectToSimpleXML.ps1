@@ -35,8 +35,8 @@ Function Convert-PSCustomObjectToSimpleXML {
         [parameter(Position=2)][String]$RootElement,
         [parameter(Position=3)][String]$IndentString = "`t",
         [parameter(Position=4)][Int32]$Indent = 0,
-        [parameter(Position=5)][string]$Parent,
-        [parameter(Position=6)][switch]$IsRoot = $true
+        [parameter(Position=5)][String]$Parent,
+        [parameter(Position=6)][Switch]$IsRoot = $true
     )
 
     #region INTERNAL FUNCTION
@@ -97,7 +97,8 @@ Function Convert-PSCustomObjectToSimpleXML {
         # Check in child is a PSCustomObject
         If ($child.GetType().Name -eq "PSCustomObject" -and $depth -gt 1) {
             "{0}<{1}>" -f ($indentString * $indent), $prop.Name
-            Convert-PSCustomObjectToSimpleXML $child -isRoot:$false -indent ($indent + 1) -depth ($depth - 1) -indentString $indentString
+            Convert-PSCustomObjectToSimpleXML $child -isRoot:$false -indent ($indent + 1) `
+                    -depth ($depth - 1) -indentString $indentString
             "{0}</{1}>" -f ($indentString * $indent), $prop.Name
         }
         ElseIf ($child.GetType().BaseType.ToString() -like "System.Array") {
@@ -113,12 +114,14 @@ Function Convert-PSCustomObjectToSimpleXML {
             If (($onlyPSObjects -eq $true) -AND ($Indent -gt 0)) {
                 Write-Debug "Found child array containing ONLY PSCustomObjects - setting parent name: '$($prop.Name))'"
                 ForEach ($subChild in $child) {
-                    Convert-PSCustomObjectToSimpleXML $subChild -isRoot:$false -Parent $Prop.Name -indent ($indent + 1) -depth ($depth - 1) -indentString $indentString
+                    Convert-PSCustomObjectToSimpleXML $subChild -IsRoot:$false -Indent ($indent + 1) `
+                            -Depth ($depth - 1) -IndentString $indentString  -Parent $Prop.Name
                 }
             }
             Else {
                 ForEach ($subChild in $child) {
-                    Convert-PSCustomObjectToSimpleXML $subChild -isRoot:$false -indent ($indent + 1) -depth ($depth - 1) -indentString $indentString
+                    Convert-PSCustomObjectToSimpleXML $subChild -IsRoot:$false -Indent ($indent + 1) `
+                            -Depth ($depth - 1) -IndentString $indentString
                 }
             }
         }
