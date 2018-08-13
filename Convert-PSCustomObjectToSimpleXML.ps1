@@ -27,6 +27,8 @@ Function Convert-PSCustomObjectToSimpleXML {
     The output consists of node with property names and text nodes containing the
     proprty value.
 
+    .NOTES
+    Heavily modified and extended version of a function from: http://wannemacher.us/?p=430
     #>
     [cmdletbinding(DefaultParameterSetName='Default')]
     Param (
