@@ -1,40 +1,34 @@
 Function Convert-PSCustomObjectToSimpleXML {
-	<#
+    <#
     .SYNOPSIS
+    Outputs a human readable simple text XML representation of a simple PS object
 
-	Outputs a human readable simple text XML representation of a simple PS object
+    .PARAMETER Object
+    The input object to inspect and dump
 
-	.PARAMETER Object
+    .PARAMETER Depth
+    The maximum number of levels to traverse
 
-	The input object to inspect and dump
-
-	.PARAMETER Depth
-
-	The maximum number of levels to traverse
-
-	.PARAMETER RootElement
-
-    The name of the root element in the document.
-    If not specified and input object contains single entry, will attempt to use that entry's name.
+    .PARAMETER RootElement
+    The name of the root element in the document. If not specified and input 
+    object contains single entry, will attempt to use that entry's name.
     Otherwise, will default to "root"
 
-	.PARAMETER indentString
+    .PARAMETER indentString
+    The string used to indent each level of XML.  Set to "" to remove indentation.
 
-	The string used to indent each level of XML.  Set to "" to remove indentation.
+    .DESCRIPTION
+    Outputs a human readable simple text XML representation of a simple PS object.
 
-	.DESCRIPTION
+    A PSObject with member types of NoteProperty will be dumped to XML.  Only
+    nested PSObjects up to the depth specified will be searched. All other
+    note properties will be ouput using their strings values.
 
-	Outputs a human readable simple text XML representation of a simple PS object.
+    The output consists of node with property names and text nodes containing the
+    proprty value.
 
-	A PSObject with member types of NoteProperty will be dumped to XML.  Only
-	nested PSObjects up to the depth specified will be searched. All other
-	note properties will be ouput using their strings values.
-
-	The output consists of node with property names and text nodes containing the
-	proprty value.
-
-	#>
-	[cmdletbinding(DefaultParameterSetName='Default')]
+    #>
+    [cmdletbinding(DefaultParameterSetName='Default')]
     param (
         [parameter(Position=0,ValueFromPipeline,ParameterSetName='InputObject')][PSCustomObject]$Object,
         [parameter(Position=1)][Int32]$Depth = 10,
