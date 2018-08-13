@@ -29,7 +29,7 @@ Function Convert-PSCustomObjectToSimpleXML {
 
     #>
     [cmdletbinding(DefaultParameterSetName='Default')]
-    param (
+    Param (
         [parameter(Position=0,ValueFromPipeline,ParameterSetName='InputObject')][PSCustomObject]$Object,
         [parameter(Position=1)][Int32]$Depth = 10,
         [parameter(Position=2)][String]$RootElement,
@@ -42,7 +42,7 @@ Function Convert-PSCustomObjectToSimpleXML {
     #region INTERNAL FUNCTION
     Function Get-ObjectDefaultProperties {
         [cmdletbinding()]
-        param($innerObject)
+        Param($innerObject)
         Try {
             [ARRAY]$DefaultTypeProps = @(
                 $innerObject.gettype().GetProperties() | Select-Object -ExpandProperty Name -ErrorAction Stop | Sort-Object -Unique
@@ -72,7 +72,7 @@ Function Convert-PSCustomObjectToSimpleXML {
     Else {$RootElement = "root"}
 
     # write opening tag for root element
-    if ($IsRoot) { "<{0}>" -f $RootElement }
+    If ($IsRoot) { "<{0}>" -f $RootElement }
 
     # If 'Parent' parameter passed, write opening tag for parent element
     If ($PSBoundParameters['Parent']) {
@@ -90,19 +90,17 @@ Function Convert-PSCustomObjectToSimpleXML {
             Where {$defaultObjProperties -notcontains $_.Name}
 
     Write-Debug "Processing $($NoteProperties.Count) object properties: '$($NoteProperties -Join "','")'"
-
-    foreach ($prop in $NoteProperties) {
-    #foreach ($prop in (Get-Member -InputObject $object -MemberType NoteProperty)) {
+    ForEach ($prop in $NoteProperties) {
         $child = $object.($prop.Name)
         [ARRAY]$defChildProps = Get-ObjectDefaultProperties $child -Debug:$false
 
         # Check in child is a PSCustomObject
-        if ($child.GetType().Name -eq "PSCustomObject" -and $depth -gt 1) {
+        If ($child.GetType().Name -eq "PSCustomObject" -and $depth -gt 1) {
             "{0}<{1}>" -f ($indentString * $indent), $prop.Name
-                Convert-PSCustomObjectToSimpleXML $child -isRoot:$false -indent ($indent + 1) -depth ($depth - 1) -indentString $indentString
+            Convert-PSCustomObjectToSimpleXML $child -isRoot:$false -indent ($indent + 1) -depth ($depth - 1) -indentString $indentString
             "{0}</{1}>" -f ($indentString * $indent), $prop.Name
         }
-        elseif ($child.GetType().BaseType.ToString() -like "System.Array") {
+        ElseIf ($child.GetType().BaseType.ToString() -like "System.Array") {
             # Test for an array containing only PSCustomObjects
             $onlyPSObjects = $true
             $child | % {
@@ -114,7 +112,7 @@ Function Convert-PSCustomObjectToSimpleXML {
 
             If (($onlyPSObjects -eq $true) -AND ($Indent -gt 0)) {
                 Write-Debug "Found child array containing ONLY PSCustomObjects - setting parent name: '$($prop.Name))'"
-                foreach ($subChild in $child) {
+                ForEach ($subChild in $child) {
                     Convert-PSCustomObjectToSimpleXML $subChild -isRoot:$false -Parent $Prop.Name -indent ($indent + 1) -depth ($depth - 1) -indentString $indentString
                 }
             }
@@ -124,7 +122,7 @@ Function Convert-PSCustomObjectToSimpleXML {
                 }
             }
         }
-        else {
+        Else {
             # If parent exists, add extra indent
             If ($PSBoundParameters['Parent']) { $tempIndent = $indent + 1 }
             Else { $tempIndent = $Indent }
@@ -143,7 +141,7 @@ Function Convert-PSCustomObjectToSimpleXML {
     }
 
     # Write the closing tag for the root element
-    if ($IsRoot) {
+    If ($IsRoot) {
         "</{0}>" -f $RootElement
     }
 }
