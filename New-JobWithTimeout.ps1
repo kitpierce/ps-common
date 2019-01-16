@@ -14,7 +14,8 @@ function New-JobWithTimeout {
     }
     
     process {
-        $innerJob = Start-Job -Name "Job-$([Math]::Round((Get-Date).ToFileTimeUTC()))" -ScriptBlock $CmdScriptblock
+        $jobName = "Job-$([Math]::Round((Get-Date).ToFileTimeUTC()))"
+        $innerJob = Start-Job -Name $jobName -ScriptBlock $CmdScriptblock
         Write-Verbose "Starting job '$($innerJob.Name)' with ID '$($innerJob.ID)'"
         $innerJob | Wait-Job -Timeout $timeout | Out-Null
         $results = Receive-Job -Id $innerJob.Id -Keep:$KeepResults
