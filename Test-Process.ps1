@@ -21,7 +21,7 @@ function Test-Process {
 .INPUTS
     Mandatory input is $ProcessName containing one or more strings matching the process name.
 .OUTPUTS
-    If parameter 'ReturnType' is 'Boolean', the output will be either a Boolean 'True/False' - this is the default setting for 'ReturnType'
+    If parameter 'ReturnType' is 'Boolean', the output will be a Boolean 'True/False' - this is the default setting for 'ReturnType'
     
     If parameter 'ReturnType' is 'Objects' and 'DesiredState' is 'Running', the output will be the matching process objects found 
     or a Boolean 'True/False' if no such processes are found.
