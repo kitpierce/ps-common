@@ -28,6 +28,7 @@ function Test-Process {
 .NOTES
     Author:     Kit Pierce
     Version:    0.1
+    Date:       2019-01-24
 #>
     [CmdletBinding()]
     param (
