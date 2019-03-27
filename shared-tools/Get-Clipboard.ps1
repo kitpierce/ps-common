@@ -22,7 +22,7 @@ function Get-Clipboard {
 	    $arrText = $textBox.Text.Split("`r`n") | Where-Object { $_ }
 	    $result = @()
 	    foreach ( $line in $arrText ) {
-		    if ( $Trim ) { $line = $line.Trim() -Replace "^\W*",'' }
+		if ( $Trim ) { $line = $line.Trim() -Replace "^\W*",'' }
 	        if ( $ToUpper ) { $line = $line.ToUpper() }
 	        $result += $line
 	    }
