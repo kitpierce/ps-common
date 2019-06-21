@@ -1,0 +1,54 @@
+{
+	// Place your snippets for powershell here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+
+	"Define CallName": {
+		"prefix": "def-callname",
+		"language": "powershell",
+		"body": [
+		  "if (-not (\\$MyInvocation.MyCommand.Name)) {\\$callName = ''}",
+		  "else {\\$callName = \"[\\$(\\$MyInvocation.MyCommand.Name)] \"}"
+		],
+		"description": "Define 'CallName'"
+	  },
+	"Define Regex-Safe Pattern": {
+		"prefix": "def-pattern",
+		"language": "powershell",
+		"body": [
+		  "\\$XXXPattern = \\$(\\$XXXInput | ForEach-Object { [REGEX]::Escape(\\$_) -replace '\\\\\\\\\\*','(.*)' }) -join '|'"
+		],
+		"description": "Define Regex-Safe Pattern"
+	  },
+	  "Test Required Commands": {
+		"prefix": "def-reqired-commands",
+		"body": [
+		  "[ARRAY]\\$RequiredCommands = @()",
+		  "[ARRAY]\\$MissingCommands = ForEach (\\$testCommand in \\$RequiredCommands) {",
+		  "    try {",
+		  "        Get-Command -Name \\$testCommand -ErrorAction 'Stop' | Out-Null",
+		  "        Write-Verbose \"Found required command: '\\$testCommand'\"",
+		  "    }",
+		  "    catch {\\$testCommand}",
+		  "}",
+		  "if (\\$MissingCommands) {",
+		  "    Write-Warning \"Missing $(\\$MissingCommands.Count) required command(s): '\\$(\\$MissingCommands -join \"','\")'\"",
+		  "    break",
+		  "}",
+		  "else {",
+		  "    @('MissingCommands','RequiredCommands') | ForEach-Object { Remove-Variable -Scope Local -Name \\$_}",
+		  "}"
+		],
+		"description": "Test Required Commands"
+	  }
+}
