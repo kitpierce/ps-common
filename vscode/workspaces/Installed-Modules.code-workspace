@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"name": "Personal Modules",
+			"path": "${env:USERPROFILE}/Documents/WindowsPowerShell/Modules"
+		},
+		{
+			"name": "System Modules",
+			"path": "${env:ProgramFiles}/WindowsPowerShell/Modules"
+		}
+	],
+	"settings": {
+		"terminal.integrated.cwd": "${env:USERPROFILE}/Documents/WindowsPowerShell/Modules"
+	}
+}
