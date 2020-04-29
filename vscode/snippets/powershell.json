@@ -91,7 +91,7 @@
 		  	"\\$${1:Out} = \\$(\\$${1:In} | ForEach-Object { [REGEX]::Escape(\\$_) -replace '\\\\\\\\\\*','(.*)' }) -join '|'"
 		],
 		"description": "Define Regex-Safe Pattern"
-	  },
+	},
 	  
 	 "Test Required Commands": {
 		"prefix": "def-reqired-commands",
@@ -112,5 +112,5 @@
 			"}"
 		],
 		"description": "Test Required Commands"
-	  }
+	}
 }
