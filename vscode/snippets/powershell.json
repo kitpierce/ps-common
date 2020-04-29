@@ -27,18 +27,20 @@
 		"prefix": "def-callname",
 		"language": "powershell",
 		"body": [
-		  "if (-not (\\$MyInvocation.MyCommand.Name)) {\\$callName = ''}",
-		  "else {\\$callName = \"[\\$(\\$MyInvocation.MyCommand.Name)] \"}"
+			"# Define invocation call's name for use in Write-* commands",
+			"if (-not (\\$MyInvocation.MyCommand.Name)) {\\$callName = ''}",
+			"else {\\$callName = \"[\\$(\\$MyInvocation.MyCommand.Name)] \"}"
 		],
 		"description": "Define 'CallName'"
-	  },
+	},
 
     "Define Passed Parameters": {
         "prefix": "def-passedParams",
         "body": [
+			"# Define PassedParams from bound parameters",
             "\\$PassedParams = @{'Verbose' = \\$Verbose}",
 			"\\$PSBoundParameters.GetEnumerator() | ForEach-Object {",
-			"\tWrite-Verbose \"\\${callName}Adding PassedParameter key: '\\$(\\$_.Key)'\""
+			"\tWrite-Verbose \"\\${callName}Adding PassedParameter key: '\\$(\\$_.Key)'\"",
 			"\t\\$PassedParams[\"\\$(\\$_.Key)\"] = \\$_.Value",
             "}"
         ],
@@ -48,13 +50,15 @@
 	"Define Passed Parameters With Exclusions": {
         "prefix": "def-excludePassedParams",
         "body": [
-			"[ARRAY]\\$local:DoNotPassParameters = @()"
-            "\\$PassedParams = @{'Verbose' = \\$Verbose}",
+			"# Define PSBoundParameter keys to exclude from PassedParams",
+			"[ARRAY]\\$local:DoNotPassParameters = @()",
+			"# Define PassedParams from bound parameters",
+			"\\$PassedParams = @{'Verbose' = \\$Verbose}",
 			"\\$PSBoundParameters.GetEnumerator() | ForEach-Object {",
 			"\tif (\\$_.Key -notin \\$local:DoNotPassParameters) {",
-			"\t\tWrite-Verbose \"\\${callName}Adding PassedParameter key: '\\$(\\$_.Key)'\""
+			"\t\tWrite-Verbose \"\\${callName}Adding PassedParameter key: '\\$(\\$_.Key)'\"",
 			"\t\t\\$PassedParams[\"\\$(\\$_.Key)\"] = \\$_.Value",
-			"\t}"
+			"\t}",
             "}"
         ],
         "description": "Define 'PassedParams' hashtable from PSBoundParameters with an array of excluded parameters"
@@ -83,7 +87,8 @@
 		"prefix": "def-pattern",
 		"language": "powershell",
 		"body": [
-		  "\\$${1:Out} = \\$(\\$${1:In} | ForEach-Object { [REGEX]::Escape(\\$_) -replace '\\\\\\\\\\*','(.*)' }) -join '|'"
+			"# Define Regex-escaped pattern from variable '${1:In}'",
+		  	"\\$${1:Out} = \\$(\\$${1:In} | ForEach-Object { [REGEX]::Escape(\\$_) -replace '\\\\\\\\\\*','(.*)' }) -join '|'"
 		],
 		"description": "Define Regex-Safe Pattern"
 	  },
@@ -91,21 +96,20 @@
 	 "Test Required Commands": {
 		"prefix": "def-reqired-commands",
 		"body": [
-		  "[ARRAY]\\$RequiredCommands = @(\t${2:CommandName})",
-		  "[ARRAY]\\$MissingCommands = ForEach (\\$testCommand in \\$RequiredCommands) {",
-		  "    try {",
-		  "        Get-Command -Name \\$testCommand -ErrorAction 'Stop' | Out-Null",
-		  "        Write-Verbose \"Found required command: '\\$testCommand'\"",
-		  "    }",
-		  "    catch {\\$testCommand}",
-		  "}",
-		  "if (\\$MissingCommands) {",
-		  "    Write-Warning \"Missing $(\\$MissingCommands.Count) required command(s): '\\$(\\$MissingCommands -join \"','\")'\"",
-		  "    break",
-		  "}",
-		  "else {",
-		  "    @('MissingCommands','RequiredCommands') | ForEach-Object { Remove-Variable -Scope Local -Name \\$_}",
-		  "}"
+			"# Test for session access to required command(s)",
+			"[ARRAY]\\$RequiredCommands = @('${2:CommandName}')",
+			"[ARRAY]\\$MissingCommands = \\$RequiredCommands | ForEach-Object {",
+			"\tif (\\$null -eq (Get-Command -Name \"\\$_\" -ErrorAction SilentlyContinue)) {",
+			"\t\tWrite-Verbose \"\\${callName}Cannot find command: '\\$_'\" ; \\$_",
+			"\t}",
+			"}",
+			"if (\\$MissingCommands) {",
+			"\tWrite-Warning \"\\${callName}Missing $(\\$MissingCommands.Count) required command(s): '\\$(\\$MissingCommands -join \"','\")'\"",
+			"\tthrow 'Missing one or more required commands'",
+			"}",
+			"else {",
+			"\tRemove-Variable -Scope Local -Name @('Missingcommands','RequiredCommands') -Verbose:\\$false",
+			"}"
 		],
 		"description": "Test Required Commands"
 	  }
