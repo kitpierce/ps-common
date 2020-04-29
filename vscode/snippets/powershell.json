@@ -1,24 +1,27 @@
 {
 	// To install, verify that Emmet Extensions Path is defined in settings.json
 	// The path below is common when using the default settings for VSCode's user installer.
-	// 		"emmet.extensionsPath": "${$ENV:APPDATA}/Code/User/snippets/"
+	// 		"emmet.extensionsPath": "C:/Users/USERNAME/Code/User/snippets/"
 	//
 	// Copy desired Emmet snippets JSON files to path (recommend one file per language)
-	
+
 	// Place your snippets for powershell here. Each snippet is defined under a snippet name and has a prefix, body and 
 	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
 	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
 	// same ids are connected.
-	// 
+
 	// Example:
 	// "Print to console": {
-	// 		"prefix": "log",
-	// 		"body": [
-	// 			"console.log('$1');",
-	// 			"$2"
-	// 		],
-	// 		"description": "Log output to console"
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
 	// }
+
+	// Here is are the snippet definitions included with the PowerShell extension:
+	// https://github.com/PowerShell/vscode-powershell/blob/master/snippets/PowerShell.json
 
 	"Define CallName": {
 		"prefix": "def-callname",
@@ -29,18 +32,66 @@
 		],
 		"description": "Define 'CallName'"
 	  },
+
+    "Define Passed Parameters": {
+        "prefix": "def-passedParams",
+        "body": [
+            "\\$PassedParams = @{'Verbose' = \\$Verbose}",
+			"\\$PSBoundParameters.GetEnumerator() | ForEach-Object {",
+			"\tWrite-Verbose \"\\${callName}Adding PassedParameter key: '\\$(\\$_.Key)'\""
+			"\t\\$PassedParams[\"\\$(\\$_.Key)\"] = \\$_.Value",
+            "}"
+        ],
+        "description": "Define 'PassedParams' hashtable from PSBoundParameters"
+	},
+	
+	"Define Passed Parameters With Exclusions": {
+        "prefix": "def-excludePassedParams",
+        "body": [
+			"[ARRAY]\\$local:DoNotPassParameters = @()"
+            "\\$PassedParams = @{'Verbose' = \\$Verbose}",
+			"\\$PSBoundParameters.GetEnumerator() | ForEach-Object {",
+			"\tif (\\$_.Key -notin \\$local:DoNotPassParameters) {",
+			"\t\tWrite-Verbose \"\\${callName}Adding PassedParameter key: '\\$(\\$_.Key)'\""
+			"\t\t\\$PassedParams[\"\\$(\\$_.Key)\"] = \\$_.Value",
+			"\t}"
+            "}"
+        ],
+        "description": "Define 'PassedParams' hashtable from PSBoundParameters with an array of excluded parameters"
+    },
+
+    "Define OrderedDictionary": {
+        "prefix": "def-orderedDictionary",
+        "body": [
+            "\\$${1:VariableName} = [Ordered]@{",
+            "\t\"${2:Key}\" = \"${3:Value}\"",
+            "}"
+        ],
+        "description": "Creates an OrderedDictionary"
+    },
+	
+	"Append Measure-Object Count": {
+		"prefix": "append-count",
+		"language": "powershell",
+		"body": [
+		  " | Measure-Object | Select-Object -ExpandProperty Count"
+		],
+		"description": "Append an extracted count from 'Measure-Object'"
+	},
+	
 	"Define Regex-Safe Pattern": {
 		"prefix": "def-pattern",
 		"language": "powershell",
 		"body": [
-		  "\\$XXXPattern = \\$(\\$XXXInput | ForEach-Object { [REGEX]::Escape(\\$_) -replace '\\\\\\\\\\*','(.*)' }) -join '|'"
+		  "\\$${1:Out} = \\$(\\$${1:In} | ForEach-Object { [REGEX]::Escape(\\$_) -replace '\\\\\\\\\\*','(.*)' }) -join '|'"
 		],
 		"description": "Define Regex-Safe Pattern"
 	  },
-	  "Test Required Commands": {
+	  
+	 "Test Required Commands": {
 		"prefix": "def-reqired-commands",
 		"body": [
-		  "[ARRAY]\\$RequiredCommands = @()",
+		  "[ARRAY]\\$RequiredCommands = @(\t${2:CommandName})",
 		  "[ARRAY]\\$MissingCommands = ForEach (\\$testCommand in \\$RequiredCommands) {",
 		  "    try {",
 		  "        Get-Command -Name \\$testCommand -ErrorAction 'Stop' | Out-Null",
