@@ -23,9 +23,22 @@
 	// Here is are the snippet definitions included with the PowerShell extension:
 	// https://github.com/PowerShell/vscode-powershell/blob/master/snippets/PowerShell.json
 
+	"Define Try/Throw": {
+		// This extends the existing VSCode 'try' blocks by adding 'throw' on exceptions
+		"prefix": "try-throw",
+		"body": [
+			"try {",
+			"\t${1:TryCommand}",
+			"}",
+			"catch {",
+			"\tthrow \\$_.Exception.Message",
+			"}"
+		],
+		"description": "Define try/catch block and throw exception"
+	},
+
 	"Define CallName": {
 		"prefix": "def-callname",
-		"language": "powershell",
 		"body": [
 			"# Define invocation call's name for use in Write-* commands",
 			"if (-not (\\$MyInvocation.MyCommand.Name)) {\\$callName = ''}",
@@ -76,7 +89,6 @@
 	
 	"Append Measure-Object Count": {
 		"prefix": "append-count",
-		"language": "powershell",
 		"body": [
 		  " | Measure-Object | Select-Object -ExpandProperty Count"
 		],
@@ -85,7 +97,6 @@
 	
 	"Define Regex-Safe Pattern": {
 		"prefix": "def-pattern",
-		"language": "powershell",
 		"body": [
 			"# Define Regex-escaped pattern from variable '${1:In}'",
 		  	"\\$${1:Out} = \\$(\\$${1:In} | ForEach-Object { [REGEX]::Escape(\\$_) -replace '\\\\\\\\\\*','(.*)' }) -join '|'"
