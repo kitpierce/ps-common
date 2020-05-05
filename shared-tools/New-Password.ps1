@@ -10,7 +10,13 @@ Function New-Password {
     
     .EXAMPLE
     PS C:\> New-Password
+    
     Creates single password using default values
+
+    .EXAMPLE
+    PS C:\> New-Password -Length 32 -Count 10 -NonAlpha 3
+    
+    Creates 10 passwords, each 32 characters in length and containing 3 non-alphanumeric characters.
     
     .PARAMETER Length
     [Int] Length of new password.
